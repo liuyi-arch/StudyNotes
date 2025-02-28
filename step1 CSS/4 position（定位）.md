@@ -1,4 +1,4 @@
-[参考MND文档](https://developer.mozilla.org/zh-CN/docs/Web/CSS/position)
+[参考MND文档及文档效果演示](https://developer.mozilla.org/zh-CN/docs/Web/CSS/position)
 
 position取值：
 - static：默认值，元素根据文档的常规流程进行定位，此时 top, right, bottom, left 和 z-index 属性无效；
