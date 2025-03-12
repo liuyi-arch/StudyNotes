@@ -18,6 +18,11 @@ const x = 1;
 }
 ```
 
+总结：
+
+1. 尽量使用 let 或 const 代替 var，避免 undefined 访问问题；
+2. 将变量声明放在使用之前，增强代码可读性；
+
 以上是var、let、const 提升，还有其他诸如function 提升、class 提升、import 提升。
 
 参考：https://developer.mozilla.org/zh-CN/docs/Glossary/Hoisting
