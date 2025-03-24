@@ -141,6 +141,7 @@ const double = multiplier(2);
 console.log(double(5)); // 10
 ```
 > **应用场景**：函数工厂、柯里化（Curry）
+> 
 > **函数工厂、柯里化？返回一个函数参数？上述代码？**
 
 ---
