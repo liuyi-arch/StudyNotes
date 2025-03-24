@@ -170,7 +170,7 @@ const numbers = [1, 2, 3, 4];
 const sum = numbers.reduce((acc, num) => acc + num, 0);
 console.log(sum); // 10
 ```
-
+> **reduce()第一个参数，第二个参数？**
 ---
 
 ## **5. 立即执行函数（IIFE）**
@@ -214,6 +214,10 @@ function debounce(func, delay) {
 window.addEventListener("resize", debounce(() => console.log("窗口大小改变"), 500));
 ```
 > **应用场景**：搜索输入框、窗口调整
+>
+> 内层function接收timer、外层函数func和delay参数，所以使用...args；
+>
+> timer变量作用？clearTimeout作用？func.apply(this,args)，apply用法？this指向？args?
 
 ### **7.2 函数节流（Throttle）**
 **作用**：确保函数在一定时间间隔内只执行一次。
