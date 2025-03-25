@@ -188,8 +188,9 @@ document.getElementById("list").addEventListener("click", function(event) {
 > - 事件委托（Event Delegation） ：将事件绑定在父元素上，由父元素处理子元素的事件，代码实现示例？
 > - BOM由下列对象组成：
 >     1. window：全局对象，是BOM的顶级对象；
->     2. navigator：获取浏览器信息
->     3. location：操作 URL
->     4. history：管理浏览记录
->     5. screen：屏幕相关信息
->     6. document（属于 DOM）
+>     2. navigator：获取浏览器信息；
+>     3. location：操作 URL；
+>     4. history：管理浏览记录；
+>     5. screen：屏幕相关信息；
+>     6. document（属于 DOM）；
+> - DOM（Document Object Model）文档对象模型，BOM（Browser Object Model）浏览器对象模型；
