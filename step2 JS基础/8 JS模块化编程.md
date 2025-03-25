@@ -404,3 +404,9 @@ new ModuleFederationPlugin({
 > - **Monorepo（单一代码仓库）**：多个模块放在一个 Git 仓库，比如使用 `pnpm workspace` 统一管理依赖？
 > - **Multirepo（多仓库管理）**：每个模块独立存储，适用于微服务架构？
 > - 使用事件总线实现模块间通信，示例代码？
+> - 大型前端项目使用import().then()实现按需加载（提高首屏加载速度）？
+> - 组件库搭建NPM包封装？
+> - 独立部署不同子应用？
+> - 使用iframe或module federation进行模块拼接？
+> - 使用ESLint + Prettier保证代码风格一致？
+> - 使用Husky + Lint-staged在 Git 提交前自动检查代码质量？
