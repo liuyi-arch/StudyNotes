@@ -138,10 +138,16 @@ const user = {
     [prefix + "id"]: 1,
     [prefix + "name"]: "Alice"
 };
-
-console.log(user); 
-// { user_id: 1, user_name: "Alice" }
 ```
 
----
+## **5.参数默认值的使用（ES6+）**
+
+| **特性** | **示例** | **作用** |
+|---------|---------|---------|
+| **基本用法** | `function greet(name = "Guest") {}` | 设定默认值，避免 `undefined` |
+| **解构赋值默认值** | `function displayUser({ name = "Guest" } = {}) {}` | 适用于缺少对象属性的情况 |
+| **结合 Rest 参数** | `function sum(a = 0, ...rest) {}` | 适用于变长参数的场景 |
+| **`undefined` 触发默认值** | `test(undefined); // 使用默认值` | 仅 `undefined` 触发，`null` 不触发 |
+| **计算表达式** | `function greet(name = getName()) {}` | 允许使用动态计算的默认值 |
+| **箭头函数默认值** | `const multiply = (a = 1, b = 2) => a * b;` | 适用于简写函数 |
 
