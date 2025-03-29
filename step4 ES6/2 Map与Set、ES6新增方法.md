@@ -257,13 +257,13 @@ Promise.race([p3, p4]).then(console.log); // "P3 完成"
 
 ---
 
-## **总结**
-ES6 引入了许多实用方法，使开发更高效：
-- **数组**：`Array.from()`, `find()`, `includes()`
-- **字符串**：`startsWith()`, `repeat()`, `padStart()`
-- **对象**：`Object.assign()`, `Object.entries()`
-- **Promise**：`Promise.all()`, `Promise.race()`
-- **Math**：`Math.trunc()`, `Math.sign()`
+> ## **总结**
+> Set不允许重复元素的数据结构，可用于数组去重；创建Set、添加、删除、是否存在某个值、清空Set代码示例；
+> 键可以是任何类型、按插入顺序存储、size属性获取长度；读取值、是否存在键值对示例代码；
+> - **数组**：`Array.from()`, `Array.of()`,`find(callback)`, `includes()`,`fill()`；
+> - **字符串**：`startsWith()`, `repeat()`, `padStart()`；
+> - **对象**：`Object.assign()`, `Object.entries()`,`Object.values()`,`Object.keys()`,`Object.is()`；
+> - **Promise**：`Promise.all()`, `Promise.race()`,`Promise.resolve()`,`Promise.reject()`；
+> - **Math**：`Math.trunc()`, `Math.sign()`；
 
-这些方法能有效提高开发效率，建议熟练掌握！🚀
 
