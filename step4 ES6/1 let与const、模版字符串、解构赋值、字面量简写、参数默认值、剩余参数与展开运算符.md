@@ -151,3 +151,56 @@ const user = {
 | **计算表达式** | `function greet(name = getName()) {}` | 允许使用动态计算的默认值 |
 | **箭头函数默认值** | `const multiply = (a = 1, b = 2) => a * b;` | 适用于简写函数 |
 
+
+## **6.剩余参数（Rest Parameters）与 展开运算符（Spread Operator）**
+### **示例 1：数组合并**
+```js
+const arr1 = [1, 2, 3];
+const arr2 = [4, 5, 6];
+
+const merged = [...arr1, ...arr2];
+console.log(merged); // [1, 2, 3, 4, 5, 6]
+```
+
+### **示例 2：复制数组**
+```js
+const original = [1, 2, 3];
+const copy = [...original];
+
+console.log(copy); // [1, 2, 3]
+console.log(copy === original); // false（是新的数组）
+```
+
+### **示例 3：对象合并**
+```js
+const defaultSettings = { theme: "light", fontSize: "16px" };
+const userSettings = { fontSize: "18px", darkMode: true };
+
+const finalSettings = { ...defaultSettings, ...userSettings };
+console.log(finalSettings);
+// { theme: "light", fontSize: "18px", darkMode: true }
+```
+
+### **示例 4：复制对象**
+```js
+const person = { name: "Alice", age: 25 };
+const copy = { ...person };
+
+console.log(copy); // { name: "Alice", age: 25 }
+```
+
+### **示例 5：函数调用**
+```js
+function sum(a, b, c) {
+    return a + b + c;
+}
+
+const nums = [1, 2, 3];
+console.log(sum(...nums)); // 6
+```
+
+**⚠️ 注意**：剩余参数必须是 **最后一个参数**，否则会报错：
+```js
+function test(...args, last) { } // ❌ 错误
+```
+
