@@ -74,10 +74,10 @@ showVar(); // I am global
 ```js
 function test() {
     let localVar = "I am local";
-    console.log(localVar);
+    console.log(localVar); 
 }
-test();
-// console.log(localVar); // ❌ 报错：localVar 未定义
+test(); // I am local
+console.log(localVar); // ReferenceError: localVar is not defined
 ```
 
 #### **（3）块级作用域（let/const）**
@@ -85,14 +85,23 @@ test();
 {
     let x = 10;
 }
-// console.log(x); // ❌ 报错：x 未定义
+console.log(x); // ReferenceError: x is not defined
 ```
-> `var` 没有块级作用域，而 `let` 和 `const` 有。
+> `var` 没有块级作用域，而 `let` 和 `const` 有；
 
 ---
 
 ### **2.2 闭包（Closure）**
-**闭包** 指的是 **内部函数** 访问 **外部函数变量**，即使外部函数已经执行完毕。
+先简单解释一下闭包，后续js进阶章节结合执行上下文、作用域链详细解释闭包；
+
+理论上闭包：（MDN）闭包是指那些能够访问自由变量的函数，自由变量是指在函数中使用的，但既不是函数参数也不是函数的局部变量的变量；
+
+从这个角度理解，岂不是所有的JavaScript函数都是闭包？下面引入实践意义上的闭包；
+
+实践意义上闭包：（ECMAScript）即使创建自由变量的函数的上下文已经销毁，但该自由变量仍然存在，即该自由变量仍可被其他函数使用；
+
+下面引入一个实践意义上闭包例子：
+
 ```js
 function outer() {
     let count = 0; // 外部函数变量
@@ -101,8 +110,8 @@ function outer() {
         console.log(count);
     };
 }
-const counter = outer();
-counter(); // 1
+const counter = outer(); // 这行代码解释：outer() 执行，返回 inner 函数给counter，此时，counter 是对 inner 函数的引用
+counter(); // 1 // 这里counter()是对inner函数的调用
 counter(); // 2
 ```
 > **应用场景**：
@@ -170,7 +179,7 @@ const numbers = [1, 2, 3, 4];
 const sum = numbers.reduce((acc, num) => acc + num, 0);
 console.log(sum); // 10
 ```
-> **reduce()第一个参数，第二个参数？**
+
 ---
 
 ## **5. 立即执行函数（IIFE）**
@@ -193,7 +202,7 @@ function curry(a) {
         };
     };
 }
-console.log(curry(1)(2)(3)); // 6
+console.log(curry(1)(2)(3)); // 6 // 从左至右调用对应从外到里函数传入值
 ```
 > **应用场景**：函数复用、延迟计算
 
@@ -237,16 +246,3 @@ document.addEventListener("scroll", throttle(() => console.log("页面滚动"), 
 ```
 > **应用场景**：滚动事件、按钮点击
 
----
-
-## **总结**
-- **基础**
-  - 函数声明、表达式、箭头函数
-  - 作用域、闭包（私有变量、计数器）
-- **高级**
-  - 高阶函数（map/filter/reduce）
-  - 立即执行函数（IIFE）
-  - 柯里化（Currying）
-  - **防抖 & 节流**
-
-掌握这些函数技巧，将极大提升 JavaScript 编程能力！🚀
