@@ -1,227 +1,113 @@
-# **JavaScript `this` 规则与使用**
-`this` 是 JavaScript 中的一个关键字，表示**当前执行上下文**，它的指向在不同的场景下会有所不同。
+## 一、浅谈this指向
 
----
+结论：
 
-## **1. `this` 的五大规则**
-`this` 的指向**取决于函数的调用方式**，主要有以下几种规则：
-1. **默认绑定**（全局环境）
-2. **隐式绑定**（对象调用）
-3. **显示绑定**（`call` / `apply` / `bind`）
-4. **`new` 绑定**（构造函数）
-5. **箭头函数绑定**（继承外层 `this`）
+- 全局作用域下：浏览器环境，this指向window；node环境，this指向module.exports；
+- 普通函数调用：非严格模式，this指向全局对象；严格模式，this指向undefined；
+- 函数作为某对象的方法被该对象调用：this指向该对象；
+- 构造函数调用：this指向新创建的实例对象；
+- 箭头函数没有自己this，它继承外层作用域的this；
+- 显示绑定this：指向绑定的对象；
+- 赋值或运算符导致 this 丢失；
 
----
+验证：
 
-## **2. `this` 详细规则**
-
-### **2.1 默认绑定（非严格模式）**
-如果 `this` 没有明确的绑定，它会指向 **全局对象（`window` / `globalThis`）**：
 ```js
-function showThis() {
-    console.log(this); // 在浏览器中：window
+// 1. 全局作用域：浏览器环境、node环境
+console.log(this === window); // true
+console.log(this === module.exports); // true
+
+// 2. 普通函数调用：非严格模式、严格模式
+function test() {
+    console.log(this === global); // true
 }
-showThis();
-```
+test();
 
-**严格模式下（`use strict`）**，`this` 变为 `undefined`：
-```js
-"use strict";
-function showThis() {
-    console.log(this); // undefined
+'use strict'; // 放在文件的第一行，才能启用
+function test() {
+    console.log(this === undefined); // true
 }
-showThis();
-```
+test();
 
----
-
-### **2.2 隐式绑定（对象调用）**
-当函数作为 **对象的方法** 调用时，`this` 指向**调用该方法的对象**：
-```js
+// 3. 函数作为某对象的方法被该对象调用
 const obj = {
-    name: "Alice",
-    greet: function() {
-        console.log(this.name); // this 指向 obj
+    name: "Tom",
+    say() {
+        console.log(this.name); // Tom
+        console.log(this); // { name: 'Tom', say: [Function: say] }
     }
 };
-obj.greet(); // "Alice"
-```
 
-> **注意**：**丢失 `this`**
-```js
+obj.say();
+
+// 4. 构造函数调用
+function Person(name) {
+    this.name = name;
+}
+const p = new Person("Alice");
+
+console.log(p.name); // Alice
+console.log(p); // Person { name: 'Alice' }
+console.log(Person); // [Function: Person]
+
+// 5. 箭头函数
 const obj = {
-    name: "Alice",
-    greet: function() {
+    name: "Tom",
+    show() {
+        const inner = () => console.log(this.name); // Tom
+        inner();
+
+        function inner2() {
+            console.log(this.name); // undefined
+        }
+        inner2();     
+    }
+};
+
+obj.show();
+
+// 6. call、apply、bind显示绑定
+function show() {
+    console.log(this);
+}
+
+const obj = { name: "Tom" };
+
+show.call(obj); // { name: "Tom" }
+show.apply(obj); // { name: "Tom" }
+
+const boundShow = show.bind(obj);
+boundShow(); // { name: "Tom" }
+
+// 7. 赋值或运算导致 this 丢失
+const obj = {
+    name: "Tom",
+    say() {
         console.log(this.name);
     }
 };
 
-const greetFn = obj.greet;
-greetFn(); // ❌ undefined（this 变成了 window）
-```
-**解决方法**：使用 `.bind()` 绑定 `this`：
-```js
-const greetBind = obj.greet.bind(obj);
-greetBind(); // "Alice"
+(obj.say)();  // Tom
+
+const fn = obj.say;
+fn(); // undefined
+(false || obj.say)(); // undefined
 ```
 
----
+## 二、从Reference类型角度理解this指向
 
-### **2.3 显示绑定（`call` / `apply` / `bind`）**
-#### **（1）`call()`**
-使用 `call()` 显示绑定 `this`，传递参数：
-```js
-function showInfo(age) {
-    console.log(this.name, age);
-}
+![image-20250713115642481](/Users/liuliu/Library/Application Support/typora-user-images/image-20250713115642481.png)
 
-const person = { name: "Bob" };
-showInfo.call(person, 25); // "Bob", 25
-```
+| 调用形式             | Reference 产生？         | this 指向          |
+| -------------------- | ------------------------ | ------------------ |
+| 普通函数调用         | 否                       | global / undefined |
+| obj.方法()           | 是，Reference.base 为obj | obj                |
+| new 调用             | 不适用                   | 实例对象           |
+| call/apply/bind      | 不适用                   | 显式指定           |
+| 箭头函数             | 否，继承外层Reference    | 外层环境           |
+| 赋值后单独调用       | 否                       | 全局 / undefined   |
+| (obj.foo, obj.foo)() | 否，丢失Reference        | 全局 / undefined   |
 
-#### **（2）`apply()`**
-`apply()` 作用与 `call()` 相同，但参数使用**数组**：
-```js
-showInfo.apply(person, [30]); // "Bob", 30
-```
-
-#### **（3）`bind()`**
-`bind()` **不会立即执行**，返回一个新函数：
-```js
-const boundFn = showInfo.bind(person);
-boundFn(35); // "Bob", 35
-```
-
----
-
-### **2.4 `new` 绑定（构造函数）**
-当使用 `new` 调用构造函数时，`this` 绑定到**新创建的对象**：
-```js
-function Person(name) {
-    this.name = name;
-}
-const p = new Person("Charlie");
-console.log(p.name); // "Charlie"
-```
-
----
-
-### **2.5 箭头函数绑定（继承外层 `this`）**
-箭头函数不会创建自己的 `this`，而是**继承外层作用域的 `this`**：
-```js
-const obj = {
-    name: "David",
-    greet: function() {
-        setTimeout(() => {
-            console.log(this.name); // 继承 obj 的 this
-        }, 1000);
-    }
-};
-obj.greet(); // "David"
-```
-**对比普通函数：**
-```js
-const obj = {
-    name: "Eve",
-    greet: function() {
-        setTimeout(function() {
-            console.log(this.name); // ❌ undefined（this 指向 window）
-        }, 1000);
-    }
-};
-obj.greet();
-```
-**总结：**
-- 普通函数的 `this` 由**调用方式**决定
-- **箭头函数的 `this` 继承外层**
-
----
-
-## **3. `this` 在不同场景下的表现**
-| 场景 | `this` 指向 |
-|------|------------|
-| **全局作用域**（非严格模式） | `window` / `globalThis` |
-| **严格模式** | `undefined` |
-| **对象方法** | 该对象 |
-| **构造函数（`new`）** | 新创建的对象 |
-| **`call` / `apply` / `bind`** | 绑定的对象 |
-| **箭头函数** | 继承外层 `this` |
-
----
-
-## **4. 实战案例**
-### **4.1 修复 `this` 丢失问题**
-```js
-const obj = {
-    name: "Grace",
-    greet: function() {
-        setTimeout(() => {
-            console.log(this.name);
-        }, 1000);
-    }
-};
-obj.greet(); // "Grace"
-```
-**箭头函数保证 `this` 指向 `obj`，避免 `this` 变成 `window`。**
-
----
-
-### **4.2 `this` 在事件处理程序中的使用**
-```js
-const button = document.querySelector("button");
-button.addEventListener("click", function() {
-    console.log(this); // 指向 `button`
-});
-```
-**箭头函数无法绑定 `this`，此时 `this` 指向 `window`：**
-```js
-button.addEventListener("click", () => {
-    console.log(this); // `window`，不是 `button`
-});
-```
-
----
-
-### **4.3 `this` 在 class 中**
-```js
-class Person {
-    constructor(name) {
-        this.name = name;
-    }
-
-    greet() {
-        console.log(`Hello, my name is ${this.name}`);
-    }
-}
-
-const p = new Person("Henry");
-p.greet(); // "Hello, my name is Henry"
-```
-
-**解决 `this` 丢失问题**
-```js
-class Person {
-    constructor(name) {
-        this.name = name;
-    }
-
-    greet() {
-        setTimeout(() => {
-            console.log(`Hello, my name is ${this.name}`); // 继承外层 `this`
-        }, 1000);
-    }
-}
-const p = new Person("Ivy");
-p.greet(); // "Hello, my name is Ivy"
-```
-
----
-
-## **5. 总结**
-1. **默认绑定**：`this` 指向 `window`（严格模式下 `undefined`）
-2. **隐式绑定**：`this` 指向调用对象
-3. **显示绑定**：`call()`、`apply()`、`bind()` 绑定 `this`
-4. **`new` 绑定**：`this` 绑定到新对象
-5. **箭头函数**：`this` 继承外层作用域
-
-掌握 `this` 的规则，可以帮助我们更好地编写 JavaScript 代码，并解决 `this` 绑定错误的问题！🚀
+> The value of `this` is determined by the base value of the Reference that is the result of evaluating the MemberExpression
+>
+> ECMAScript 5.1 规范关于Reference链接：https://262.ecma-international.org/5.1/#sec-8
