@@ -531,4 +531,5 @@ micro task 1
 micro task 2
 macro task
 ```
+参考：https://www.lydiahallie.com/blog/event-loop
 
