@@ -1,38 +1,32 @@
 # js八股
 
-## 1. Call、apply、bind？
+## 1. call、apply、bind？✅
 
-它们共同点主要有两点：
+面试回答：
 
-- 作用都是**手动指定函数的`this` 指向**；
-- **第一个参数是 `this` 要指向的对象**：
-  - 如果参数为 `null` 或 `undefined`，在非严格模式下默认指向全局对象 `window`；
-  - 严格模式下，`this` 会保留为 `null` 或 `undefined`，不会自动绑定到 `window`；
+- call、apply、bind作用都是手动指定函数的this指向；第一个参数为该函数要指向的对象；
 
-它们主要区别在于是否**立即执行、参数形式、this是否永久绑定**：
+- call、apply、bind后续参数形式不同：call和bind为参数列表，apply为参数数组；
 
-| 方法    | 是否立即执行 | 参数形式                                    | this 是否永久绑定 |
-| ------- | ------------ | ------------------------------------------- | ----------------- |
-| `call`  | 是           | 参数列表：call(thisArg, arg1, arg2, ...)    | 否                |
-| `apply` | 是           | 参数数组：apply(thisArg, [arg1, arg2, ...]) | 否                |
-| `bind`  | 否           | 参数列表（可分批，柯里化）：同call          | 是                |
+  ```js
+  fn.call(obj, arg1, arg2, ...);
+  fn.apply(obj, [arg1, arg2, ...]);
+  ```
 
-关于call、apply一次绑定，bind永久绑定：
+- call和apply是一次绑定且立即执行，bind是永久绑定，并且bind绑定优先级高于call和apply；
 
-```js
-// call一次绑定
-function sayHi() {
-  console.log(this.name);
-}
-const person = { name: 'Alice' };
-sayHi.call(person); // "Alice"
-sayHi();            // undefined（或 window.name）
-
-// bind永久绑定
-const boundSayHi = sayHi.bind(person);
-boundSayHi();       // "Alice"
-boundSayHi.call({ name: 'Bob' }); // "Alice"
-```
+  ```js
+  function sayName(){
+    console.log(this.name);
+  }
+  const person = { name: 'zhangsan' };
+  sayName.call(person); // 第一次绑定，输出zhangsan
+  sayName(); // 第二次绑定，undefined
+  
+  const newSayName = sayName.bind(person);
+  newSayName(); // 第一次绑定，输出zhangsan
+  newSayName.call({ name: 'lisi' }); // 第二次绑定还是输出zhangsan，证明bind永久绑定，且优先级高于call,apply
+  ```
 
 ## 2. this指向？
 
@@ -72,7 +66,7 @@ if (typeof obj === 'function') {
 // obj.call(...args)，call没有设置第一个参数，那么将指向全局；
 ```
 
-## 3. var let const?
+## 3. var let const?✅
 
 | 特性             | var                         | let                                  | const                                |
 | ---------------- | --------------------------- | ------------------------------------ | ------------------------------------ |
@@ -207,8 +201,8 @@ sleep(1000)
 // async/await
 async function run() {
   try {
-    await sleep(1000);
-    console.log("1");
+    await sleep(1000); // sleep()宏任务
+    console.log("1"); // await后的console.log()微任务
 
     await sleep(2000);
     console.log("2");
@@ -227,13 +221,13 @@ run();
 
 概念：
 
-- **核心作用**：用来处理异步操作，避免回调地狱，支持链式调用；
+- 核心作用：用来处理异步操作，避免回调地狱，支持链式调用；
 
 - 是一个构造函数，接受一个函数作为参数，返回一个 Promise 实例；
 
 - 有以下特点：
 
-  - **状态不可逆**：一旦从 `pending` 变成 `fulfilled` 或 `rejected`，就不能再改变。
+  - **状态不可逆**：一旦从 **`pending` 变成 `fulfilled` 或 `rejected`**，就不能再改变。
 
   - **then/catch 总是异步执行**：即使 Promise 已经是 fulfilled 状态，回调也会进入 **微任务队列**。
 
@@ -298,11 +292,11 @@ Promise常用API：
 
 - `Promise.allSettled(iterable)` → 等待所有完成，返回每个结果状态数组
 
-## 6. js有哪些数据类型？判断数据类型方法？
+## 6. js有哪些数据类型？判断数据类型方法？✅
 
-基本数据类型：Number、String、Boolean、null、undefined、BigInt、Symbol；
+基本数据类型：**Number、String、Boolean、null、undefined、BigInt、Symbol**；
 
-复杂数据类型：Object、Array、Function、Date、RegExp、Map、Set、WeakMap、WeakSet等；
+复杂数据类型：**Object、Array、Function、Date、RegExp、Map、Set**、WeakMap、WeakSet等；
 
 > 1. Synbol类型有两种创建方式：Symbol()、Symbol.for()，其中Symbol()创建的值是唯一的，Symbol.for()创建的值是共享的；
 > 2. Symbol类型作为键使用时，不会被for...in等方式访问到；
@@ -312,7 +306,7 @@ Promise常用API：
 数据类型检测：
 
 - `typeof xx`：设计缺陷，对null判断是object；
-- `Object.prototype.toString.call(xx)`：最准确，适用所有数据类型；
+- **`Object.prototype.toString.call(xx)`**：最准确，适用所有数据类型；
 - `person instanceof Person`：判断实例对象是否是构造函数的实例；
 
 
@@ -320,7 +314,27 @@ Promise常用API：
 数据类型赋值：
 
 - 基本数据类型存储的是实际值、复杂数据类型存储的是引用地址；
-- 要实现复杂数据类型浅拷贝，比如数组：`res.push([...path])`；
+
+- 复杂数据类型深浅拷贝：
+
+  - 浅拷贝：**扩展运算符`[...arr]、{...obj}`**
+
+    ```js
+    let obj = { a: 1, b: { c: 2 } };
+    let shallow = { ...obj };
+    console.log(shallow); // { a: 1, b: { c: 2 } }
+    
+    const res = [];
+    const path = [1, 2];
+    // res.push(...path); // [1, 2]
+    res.push(path); // [[1, 2]]
+    console.log(res);
+    ```
+
+  - 深拷贝：
+
+    - `**JSON.parse(JSON.stringify(xx))**`：不能拷贝 `undefined`、`function`、`Symbol`、循环引用；
+    - **`structuredClone(xx)`**
 
 
 
@@ -334,44 +348,54 @@ Promise常用API：
   - 转换为字符串：String(xx)、xx.toString()等；
   - 转换为boolean值：Boolean(xx)；
 
-## 7. js常用数组方法？哪些数组方法不改变原数组？
+## 7. js常用数组方法？哪些数组方法不改变原数组？✅
 
-增、删、查：
+| 类别     | 方法                                       | 作用                               | 示例                                 |
+| -------- | ------------------------------------------ | ---------------------------------- | ------------------------------------ |
+| **增**   | `push()`                                   | 向数组末尾添加元素，**返回新长度** | `arr.push(4)` → `[1,2,3,4]`          |
+|          | `unshift()`                                | 向数组开头添加元素，**返回新长度** | `arr.unshift(0)` → `[0,1,2,3]`       |
+|          | `concat()`                                 | 合并数组，返回新数组               | `[1,2].concat([3,4])` → `[1,2,3,4]`  |
+| **删**   | `pop()`                                    | 删除末尾元素，**返回被删元素**     | `[1,2,3].pop()` → `3`                |
+|          | `shift()`                                  | 删除开头元素，**返回被删元素**     | `[1,2,3].shift()` → `1`              |
+|          | **`splice(start, deleteCount)`**           | **删除指定位置**元素               | `arr.splice(1,1)` → 删除第2个元素    |
+| **改**   | **`splice(start, deleteCount, ...items)`** | **删除并插入新元素**               | `arr.splice(1,1,'x')` → 替换         |
+|          | **`fill(value, start, end)`**              | 用**指定值填充数组**               | `[1,2,3].fill(0,1,3)` → `[1,0,0]`    |
+|          | `sort()`                                   | 排序（默认按字符串）               | `[3,1,2].sort()` → `[1,2,3]`         |
+|          | `reverse()`                                | 数组反转                           | `[1,2,3].reverse()` → `[3,2,1]`      |
+| **查**   | `indexOf()`                                | 查找元素下标                       | `[1,2,3].indexOf(2)` → `1`           |
+|          | **`lastIndexOf()`**                        | **从后往前查找下标**               | `[1,2,3,2].lastIndexOf(2)` → `3`     |
+|          | **`includes()`**                           | 是否包含某元素                     | `[1,2,3].includes(2)` → `true`       |
+|          | **`find()`**                               | **找到符合条件的第一个元素**       | `[1,2,3].find(x=>x>1)` → `2`         |
+|          | **`findIndex()`**                          | **找到符合条件的下标**             | `[1,2,3].findIndex(x=>x>1)` → `1`    |
+| **遍历** | `forEach()`                                | 遍历数组（**无返回值**）           | `[1,2,3].forEach(x=>console.log(x))` |
+|          | `map()`                                    | 遍历并**返回新数组**               | `[1,2,3].map(x=>x*2)` → `[2,4,6]`    |
+|          | **`filter()`**                             | 过滤数组                           | `[1,2,3].filter(x=>x>1)` → `[2,3]`   |
+|          | **`every()`**                              | 所有元素是否满足条件               | `[2,4,6].every(x=>x%2===0)` → `true` |
+|          | **`some()`**                               | 是否有元素满足条件                 | `[1,3,5].some(x=>x%2===0)` → `false` |
+|          | `reduce()`                                 | 累积计算                           | `[1,2,3].reduce((a,b)=>a+b,0)` → `6` |
+| **转换** | **`join()`**                               | 数组转字符串                       | **`[1,2,3].join('-') // "1-2-3"`**   |
+|          | **`toString()`**                           | 转换为字符串                       | **`[1,2,3].toString() // "1,2,3"`**  |
 
-- arr.push(x)末尾添加；arr.unshift(x)开头添加；
-- arr.pop()末尾删除；arr.shift()开头删除；
-- indexOf(value)已知值找索引；includes(value)是否包含值；
-  - 其他：lastIndexOf()、find(callback)、findIndex(callback)；
+| **截取** | **`slice(start, end)`**                                 | **截取[m , n)（不修改原数组）；支持负数索引（-1 表示最后一个元素）** | `[1,2,3,4].slice(1,3)` → `[2,3]`,`[1,2,3,4].slice(-4,-1)`→`[1,2,3]` |
+| -------- | ------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|          |                                                         | 应用                                                         | **数组浅拷贝：`const copy = arr.slice()`**                   |
+|          | **`arr.splice(start, deleteCount, item1, item2, ...)`** | **两个参数：截取[m , n]（会修改原数组）**                    | `[1, 2, 3, 4, 5].splice(2,2)` →`[3,4]`                       |
+|          |                                                         | **`四个参数，插入元素`**                                     | `[1, 2, 5].splice(2,0,6,7)`→`[1,2,6,7,5]`                    |
+|          |                                                         | **`四个参数，替换元素`**                                     | `[1, 2, 6, 7, 5].splice(1,2,8,9)`→`[1, 8, 9, 7, 5]`          |
 
-
-
-按分割符连接、拆分与数组合并、截取：
-
-- arr.join(',')、split('-')；
-- arr1.concat(arr2)、arr.slice(start , end)，[start , end)；
-
-
-
-过滤、映射、遍历、叠加计算、some/every：
-
-- arr.filter(num => num % 2 === 0)，留下能整除2的元素，返回新数组；
-- arr.map(num => num * num)，所有元素开平方，返回新数组；
-- arr.forEach((value , index) => console.log(value , index))，无返回数组；
-- arr.reduce((sum , num) => sum + num , 0)，叠加计算，第二个参数为sum初始值；
-- arr.some(num => num % 2 === 0)，数组是否有偶数；arr.every(num => num % 2 === 0)，数组是否全是偶数；
-
-
-
-除增、删，其余数组操作全部不改变原数组；
+- 会改变原数组：增、删、改、转换、splice()、sort()、reverse()、fill()、map()中arr为复杂数据类型；
+  - push()、unshift()、pop()、shift()、splice()、fill()、sort()、reverse()、**map()中arr为复杂数据类型**；
+- 不会改变原数组：查、遍历、map()中arr为基本数据类型、转换、concat()、slice()；
+  - IndexOf()、includes()、find()、findIndex()、forEach()、filter()、every()、some()、reduce()、join()、toString()、concat()、slice()、map()中arr为基本数据类型；
 
 ## 9. ES6新特性？
 
-1. 新的声明方式const、let：块级作用域、存在变量提升，但存在暂时性死区、const声明常量；
+1. 新的声明方式const、let：块级作用域、存在变量提升，但存在暂时性死区、let/const不能重复声明，const不能重复赋值；
 2. 新的数据结构：Set()不重复集合、Map()键值对，键可以是任何类型；
 3. 新的数据类型Symbol()：唯一的值，常用于私有属性；Symbol.for()共享值；作为键使用不会被for...in访问到；
 4. 新的遍历方式：for...of用于数组，for...in用于对象；
-5. 箭头函数：没有this绑定，继承外层函数的this、不能用作构造函数，没有prototype、没有arguments对象；
-6. 展开运算符：可用于浅拷贝、合并数组或对象；
+5. 箭头函数：没有this绑定，继承外层函数的this、**不能用作构造函数，没有prototype、没有arguments对象**；
+6. 展开运算符：可用于浅拷贝、合并数组或对象；输出dp数组最大值`Math.max(...dp)`？
 7. Promise；
 8. 类class与继承：super()与extends；
 9. 模版字符串${}、参数默认值、解构赋值、对象字面量；
@@ -486,50 +510,49 @@ bar();
 
 闭包缺点：长期占用内存；
 
-## 12. 事件循环机制？宏任务/微任务？
+## 12. 事件循环机制？宏任务/微任务？✅
 
-同步异步、串行并行：
-
-- 同步：任务按顺序执行，前一个没完成，后一个必须等待；
-- 异步：不必立即执行，可以挂起；
-- 串行：任务一个接一个执行，后面任务必须等前面完成才执行；
-- 并行：多个任务同时执行，需多线程支持；
+- 什么是事件循环机制？存在意义是什么？
+  - JS 是单线程语言，因此事件循环存在的意义是用来处理异步任务的。
 
 
 
-常见宏任务与微任务：
-
-- 宏任务：`<script>`脚本、setTimeout/setInterval、postMessage、I/O（涉及外部设备交互的操作）、用户交互事件（点击、键盘事件等）；
-- 微任务：Promise.then/catch/finally等；
+- 同步任务：立即执行，进入 主线程的调用栈；
+- 异步任务：不立刻执行，而是交给 **宿主环境（浏览器/Node.js）** 处理，完成后再把回调加入 **任务队列**；
 
 
 
-事件循环机制：
+- 常见宏任务与微任务：
+  - 宏任务：**整个`<script>`脚本**、setTimeout/setInterval、**postMessage、I/O（涉及外部设备交互的操作）、用户交互事件（点击、键盘事件等）**；
+  - 微任务：**Promise.then/catch/finally**等；
+  - 优先级：**同步任务高于异步任务（宏任务、微任务）；微任务高于宏任务**；
 
-- JavaScript 是单线程的，依赖事件循环机制来调度同步和异步任务；
-- 优先级：同步任务高于异步任务（宏任务、微任务）；微任务高于宏任务；
+
+
+- 示例：
 
 ```js
-console.log('start');
+console.log("1");
 
-setTimeout(() => {
-  console.log('macro task');
-}, 0);
+setTimeout(() => { // 宏任务中放微任务
+    console.log("2");
+  
+    Promise.resolve().then(() => {
+      console.log("3");
+    });
+  }, 0);
 
-Promise.resolve().then(() => {
-  console.log('micro task 1');
+Promise.resolve().then(() => { 
+  console.log("4");
+  setTimeout(() => { // 微任务中放宏任务
+    console.log("5");
+  }, 0);
 }).then(() => {
-  console.log('micro task 2');
+  console.log("6");
 });
 
-console.log('end');
-
-// 输出结果
-start
-end
-micro task 1
-micro task 2
-macro task
+console.log("7");
+// 输出结果：1 -> 7 -> 4 -> 6 -> 2 -> 3 -> 5
 ```
-参考：https://www.lydiahallie.com/blog/event-loop
 
+# 
