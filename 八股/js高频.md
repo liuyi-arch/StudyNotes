@@ -160,7 +160,7 @@ console.log(p1.__proto__.name);
 console.log(Person.getPrototypeOf(p1).name);
 ```
 
-## 5. Promise理解？
+## 5. Promise理解？✅
 
 背景：Promise之前，如果要处理异步问题，需要层层callback function；
 
@@ -219,7 +219,7 @@ run();
 
 
 
-概念：
+Promise概念：
 
 - 核心作用：用来处理异步操作，避免回调地狱，支持链式调用；
 
@@ -239,20 +239,21 @@ run();
 
 使用：
 
-- resolve函数作用是将Promise的状态从pending改变成fufilled，**触发 then 的第一个回调**；
-  - `resolve()`：状态变为 fulfilled，`then` 会被触发，回调的参数是 `undefined`；
-  - `resolve(value)`：状态变为 fulfilled，`then` 的回调会接收到 `value`；
-  - 如果不使用resolve()，状态仍为pending，无法触发then；
-- reject函数作用是将Promise的状态从pending改变成rejected，**触发 then 的第二个回调或 catch** ；
-- pending状态then、catch、finally都不能触发；
+- resolve(xx)作用是将Promise的状态从**pending改变成fufilled**，触发 then 的第一个回调；
+  - **`resolve()`**：状态变为 fulfilled，`then` 会被触发，**回调的参数是 `undefined`**；
+  - **`resolve(value)`**：状态变为 fulfilled，**`then` 的回调会接收到 `value`**；
+  - 如果**不使用resolve()**，状态仍为pending，**无法触发then**；
+- reject(xx)作用是将Promise的状态从**pending改变成rejected**，触发 then 的第二个回调（不常用，推荐用 `catch`）或 catch ；
+- **pending状态then、catch、finally都不能触发**；
 
 ```js
 const p = new Promise((resolve, reject) => {
     setTimeout(() => {
         const success = true;
         if (success) {
-            // resolve("数据加载成功");
-            console.log("数据加载成功");
+            // resolve(); // then中输出‘成功：undefined’
+            // resolve("数据加载成功"); // then中输出‘成功：数据加载成功’
+            console.log("数据加载成功"); // then、catch、finally中都不会输出
         } else {
             // reject("数据加载失败");
             reject();
@@ -263,9 +264,9 @@ const p = new Promise((resolve, reject) => {
 p.then(result => {
     console.log("成功:", result);
 }).catch(error => {
-    console.error("失败:", error); // 失败: 数据加载失败
+    console.error("失败:", error);
 }).finally(() => {
-    console.log("无论成功还是失败都会执行"); // 无论成功还是失败都会执行
+    console.log("无论成功还是失败都会执行"); // 需要执行resolve或reject才会执行
 });
 ```
 
@@ -273,7 +274,7 @@ p.then(result => {
 
 async/await：
 
-- then 和 await 在本质上都是等待 Promise resolve 后再执行下一个；
+- **then 和 await 在本质上都是等待 Promise resolve 后再执行下一个**；
 - 使用try/catch语法包裹await，错误全部在catch中抛出，代码结构比then更像同步；
 
 
@@ -286,11 +287,11 @@ Promise常用API：
 
 - `finally(onFinally)` → 无论结果都会执行
 
-- `Promise.all(iterable)` → 全部成功才成功，任一失败即失败
+- **`Promise.all(iterable)`** → 全部成功才成功，任一失败即失败
 
-- `Promise.race(iterable)` → 最快的一个决定结果
+- **`Promise.race(iterable)`** → 最快的一个决定结果
 
-- `Promise.allSettled(iterable)` → 等待所有完成，返回每个结果状态数组
+- **`Promise.allSettled(iterable)`** → 等待所有完成，返回每个结果状态数组
 
 ## 6. js有哪些数据类型？判断数据类型方法？✅
 
@@ -554,5 +555,3 @@ Promise.resolve().then(() => {
 console.log("7");
 // 输出结果：1 -> 7 -> 4 -> 6 -> 2 -> 3 -> 5
 ```
-
-# 
