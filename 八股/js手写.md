@@ -474,3 +474,52 @@ function toTree(list, parId) {
 }
 ```
 
+## 12. 消息订阅发布
+
+```js
+class EventEmitter {
+  constructor() {
+    this.events = new Map(); // 用 Map 存储事件和回调
+  }
+
+  on(name, fn) {
+    if (!this.events.has(name)) {
+      this.events.set(name, []);
+    }
+    const handlers = this.events.get(name);
+    if (!handlers.includes(fn)) {
+      handlers.push(fn);
+    }
+  }
+
+  off(name, fn) {
+    if (!this.events.has(name)) return;
+    const handlers = this.events.get(name);
+    const idx = handlers.indexOf(fn);
+    if (idx > -1) {
+      handlers.splice(idx, 1);
+    }
+    if (handlers.length === 0) {
+      this.events.delete(name);
+    }
+  }
+
+  emit(name, ...args) {
+    if (!this.events.has(name)) return;
+    const handlers = [...this.events.get(name)]; // 拷贝一份，避免迭代过程中修改
+    for (const fn of handlers) {
+      fn.apply(this, args);
+    }
+  }
+
+  once(name, fn) {
+    const wrapper = (...args) => {
+      fn.apply(this, args);
+      this.off(name, wrapper);
+    };
+    this.on(name, wrapper);
+  }
+}
+```
+
+
