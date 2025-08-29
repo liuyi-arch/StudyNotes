@@ -108,7 +108,7 @@ for (const key in obj) {
 
 ```js
 person.__proto__ === Person.prototype;
-Person.prototype.constructor === Person
+Person.prototype.constructor === Person;
 ```
 
 
@@ -120,7 +120,7 @@ Person.prototype.constructor === Person
 ```js
 person.__proto__ === Person.prototype;
 Person.prototype.__proto__ === Object.prototype;
-Object.__proto__ === null;
+Object.prototype.__proto__ === null;
 ```
 
 **3. 重写原型对象，要手动将constructor补回来：**
@@ -389,7 +389,7 @@ Promise常用API：
 - 不会改变原数组：查、遍历、map()中arr为基本数据类型、转换、concat()、slice()；
   - IndexOf()、includes()、find()、findIndex()、forEach()、filter()、every()、some()、reduce()、join()、toString()、concat()、slice()、map()中arr为基本数据类型；
 
-## 9. ES6新特性？
+## 9. ES6新特性？✅
 
 1. 新的声明方式const、let：块级作用域、存在变量提升，但存在暂时性死区、let/const不能重复声明，const不能重复赋值；
 2. 新的数据结构：Set()不重复集合、Map()键值对，键可以是任何类型；
@@ -401,7 +401,7 @@ Promise常用API：
 8. 类class与继承：super()与extends；
 9. 模版字符串${}、参数默认值、解构赋值、对象字面量；
 
-## 10. 箭头函数？
+## 10. 箭头函数？✅
 
 特点：
 
