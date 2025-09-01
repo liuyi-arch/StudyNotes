@@ -477,6 +477,38 @@ function toTree(list, parId) {
 ## 12. 消息订阅发布
 
 ```js
+// 简单版
+class EventEmitter{
+  constructor(){
+    // {}可继承原型上方法和属性，若{}内部有以toString为属性名的方法，可能与原型上toString方法冲突
+    this.events = {};
+  }
+  // 订阅
+  on(name, fn){
+    // // 一个事件名name（比如 "click"、"data"）可以对应多个回调函数，因此使用[]保存
+    if(!this.events[name]) this.events[name] = [];
+    this.events[name].push(fn);
+  }
+  // 取消订阅
+  off(name, fn){
+    if(!this.events[name]) return; // // 不相等保留；相等丢弃
+    this.events[name] = this.events[name].filter(item => item !== fn); 
+  }
+  // 发布
+  emit(name, ...args){
+    if(this.events[name]) this.events[name].forEach(fn => fn(...args));
+  }
+  // 一次订阅
+  once(name, fn){
+    const wrapper = (...args) => {
+      fn(...args);
+      this.off(name, wrapper);
+    }
+    this.on(name, wrapper);
+  }
+}
+
+// 改进版：Map存储键值对避免原型上方法干扰、
 class EventEmitter {
   constructor() {
     this.events = new Map(); // 用 Map 存储事件和回调
@@ -496,10 +528,10 @@ class EventEmitter {
     if (!this.events.has(name)) return;
     const handlers = this.events.get(name);
     const idx = handlers.indexOf(fn);
-    if (idx > -1) {
+    if (idx > -1) { // splice(start, deleteCount)，返回修改后的新数组；
       handlers.splice(idx, 1);
     }
-    if (handlers.length === 0) {
+    if (handlers.length === 0) { // 键name中值为空，删除键节省空间
       this.events.delete(name);
     }
   }
